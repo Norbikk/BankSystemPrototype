@@ -1,0 +1,77 @@
+{
+  "$type": "System.Collections.ObjectModel.ObservableCollection`1[[BankSystemPrototype.User, BankSystemPrototype]], System.ObjectModel",
+  "$values": [
+    {
+      "$type": "BankSystemPrototype.User, BankSystemPrototype",
+      "Id": "37d1ddb9-d42c-4b53-98a2-5690e6f11d2d",
+      "Name": "Кирилл",
+      "Surname": "Пеупеу",
+      "Secondname": "Игоревич",
+      "PhoneNumber": "79650237181",
+      "BirthDay": "1991-07-25T00:00:00",
+      "Accounts": {
+        "$type": "System.Collections.Generic.List`1[[BankSystemPrototype.Account, BankSystemPrototype]], System.Private.CoreLib",
+        "$values": [
+          {
+            "$type": "BankSystemPrototype.DepositeAccount, BankSystemPrototype",
+            "isClosed": false,
+            "AccountNumber": "fbc82583-3e70-4ef6-8c9a-c059362d7dbc",
+            "Cash": 4800
+          },
+          {
+            "$type": "BankSystemPrototype.NonDepositeAccount, BankSystemPrototype",
+            "isClosed": false,
+            "AccountNumber": "f264a689-bed6-46e0-aa97-c0455d78b832",
+            "Cash": 100
+          }
+        ]
+      }
+    },
+    {
+      "$type": "BankSystemPrototype.User, BankSystemPrototype",
+      "Id": "84d7ea5f-9de3-400d-8e3b-68eb12df56f1",
+      "Name": "Лиза",
+      "Surname": "Лизовна",
+      "Secondname": "Лизовкина",
+      "PhoneNumber": "123123",
+      "BirthDay": "1993-03-14T00:00:00",
+      "Accounts": {
+        "$type": "System.Collections.Generic.List`1[[BankSystemPrototype.Account, BankSystemPrototype]], System.Private.CoreLib",
+        "$values": [
+          {
+            "$type": "BankSystemPrototype.DepositeAccount, BankSystemPrototype",
+            "isClosed": false,
+            "AccountNumber": "d215ea98-00e6-4a9b-8059-8b9a927e3e39",
+            "Cash": 0
+          }
+        ]
+      }
+    },
+    {
+      "$type": "BankSystemPrototype.User, BankSystemPrototype",
+      "Id": "729202b7-fe12-4ecb-a692-fa930e7607d6",
+      "Name": "Миша",
+      "Surname": "Пеупеу",
+      "Secondname": "пеупеупеу",
+      "PhoneNumber": "123123",
+      "BirthDay": "2021-10-27T00:00:00",
+      "Accounts": {
+        "$type": "System.Collections.Generic.List`1[[BankSystemPrototype.Account, BankSystemPrototype]], System.Private.CoreLib",
+        "$values": [
+          {
+            "$type": "BankSystemPrototype.DepositeAccount, BankSystemPrototype",
+            "isClosed": false,
+            "AccountNumber": "f2d6ef62-c87e-4a24-9d94-485a64d5f786",
+            "Cash": 30
+          },
+          {
+            "$type": "BankSystemPrototype.NonDepositeAccount, BankSystemPrototype",
+            "isClosed": false,
+            "AccountNumber": "73e26753-11a6-4f9a-96b2-9678b23ad3cd",
+            "Cash": 70
+          }
+        ]
+      }
+    }
+  ]
+}
