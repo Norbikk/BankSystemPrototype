@@ -29,6 +29,7 @@ namespace BankSystemPrototype
         public void Close()
         {
             isClosed = true;
+            
         }
         
     }

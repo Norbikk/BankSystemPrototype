@@ -11,9 +11,12 @@ namespace BankSystemPrototype
         private NonDepositeAccount nonDepAccount = new NonDepositeAccount();
         private WorkWithJSON workWithJSON = new WorkWithJSON();
 
+        private Journal journal = new Journal();
+
         public CreatePage()
         {
             InitializeComponent();
+            
         }
         /// <summary>
         /// Кнопка НАЗАД
@@ -32,6 +35,7 @@ namespace BankSystemPrototype
         private void CreateButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var user = new User();
+            
             user.Name = NameBox.Text;
             user.Surname = SurnameBox.Text;
             user.Secondname = SecondnameBox.Text;
@@ -40,11 +44,20 @@ namespace BankSystemPrototype
             ChekBoxChecking(user, NonDepositeCheckBox, nonDepAccount);
             user.BirthDay = BirthDate.SelectedDate.Value;
             user.Id = Guid.NewGuid();
+
             
+
             UserDataBase.users.Add(user);
+            user.Post += Journal.PostMessage;
+            user.CreateUserMessage();
+
             workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
+            
             Refresh();
         }
+
+
+
         /// <summary>
         /// Общий метод проверки чекбокса
         /// </summary>
@@ -67,5 +80,7 @@ namespace BankSystemPrototype
             MainFrame.Content = new CreatePage();
         }
 
+       
+     
     }
 }

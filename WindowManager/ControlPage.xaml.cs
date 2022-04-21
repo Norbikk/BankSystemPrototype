@@ -8,10 +8,12 @@ namespace BankSystemPrototype
     public partial class ControlPage : Page
     {
         private WorkWithJSON workWithJSON = new WorkWithJSON();
+        
         public ControlPage()
         {
             InitializeComponent();
             UsersList.ItemsSource = UserDataBase.users;
+
         }
         /// <summary>
         /// Выбор юзера
@@ -60,9 +62,14 @@ namespace BankSystemPrototype
         {
             var account = new AccountTransactions<Account>();
             var cash = Convert.ToInt64(AddMoneyBox.Text);
-            account.AddMoney(cash, UsersList.SelectedIndex, AccountBox.SelectedIndex);
-            CashBox.Text = UserDataBase.users[UsersList.SelectedIndex].Accounts[AccountBox.SelectedIndex].Cash.ToString();
-            workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
+            var user = UserDataBase.users[UsersList.SelectedIndex];
+
+            user.Post += Journal.PostMessage;
+            user.PutMoneyMessage(cash);
+
+            account.AddMoney(cash, UsersList.SelectedIndex, AccountBox.SelectedIndex, CompleteTransaction, AddMoneyBox.Text);
+
+            user.Post -= Journal.PostMessage;
         }
         /// <summary>
         /// Кнопка для пересылки денег
@@ -73,9 +80,13 @@ namespace BankSystemPrototype
         {
             var account = new AccountTransactions<NonDepositeAccount>();
             var cash = Convert.ToInt64(HowMuchBox.Text);
-            account.TransferMoney(UsersList.SelectedIndex, ToWhomListView, AccountBox.SelectedIndex, cash);
-            CashBox.Text = UserDataBase.users[UsersList.SelectedIndex].Accounts[AccountBox.SelectedIndex].Cash.ToString();
-            workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
+            var user = UserDataBase.users[UsersList.SelectedIndex];
+            var reciever = UserDataBase.GetUsersByListView(ToWhomListView);
+
+            user.Post += Journal.PostMessage;
+            user.MoneyTransaction(reciever, cash);
+
+            account.TransferMoney(UsersList.SelectedIndex, ToWhomListView, AccountBox.SelectedIndex, cash, CompleteTransaction, HowMuchBox.Text);
         }
         /// <summary>
         /// Кнопка для Перевода денег внутри аккаунта
@@ -85,26 +96,30 @@ namespace BankSystemPrototype
         private void TransferInDeposit(object sender, RoutedEventArgs e)
         {
             var cash = Convert.ToInt64(AddMoneyBox1.Text);
+            var user = UserDataBase.users[UsersList.SelectedIndex];
+
+            user.Post += Journal.PostMessage;
 
             if (DepositRB.IsChecked == true)
             {
                 var transaction = new AccountTransactions<DepositeAccount>();
-                transaction.TransferMoneyInAccount(cash, UsersList.SelectedIndex, typeof(NonDepositeAccount));
-                CashBox.Text = UserDataBase.users[UsersList.SelectedIndex].Accounts[AccountBox.SelectedIndex].Cash.ToString();
+                transaction.TransferMoneyInAccount(cash, UsersList.SelectedIndex, typeof(NonDepositeAccount), CompleteTransaction, AddMoneyBox1.Text);
+                user.TransferMoneyInDeposit(cash, "Недепозитный");
 
             }
             else if (NondepositRB.IsChecked == true)
             {
                 var transaction = new AccountTransactions<NonDepositeAccount>();
-                transaction.TransferMoneyInAccount(cash, UsersList.SelectedIndex, typeof(DepositeAccount));
-                CashBox.Text = UserDataBase.users[UsersList.SelectedIndex].Accounts[AccountBox.SelectedIndex].Cash.ToString();
-
+                transaction.TransferMoneyInAccount(cash, UsersList.SelectedIndex, typeof(DepositeAccount), CompleteTransaction, AddMoneyBox1.Text);
+                user.TransferMoneyInDeposit(cash, "Депозитный");
+                
             }
             else
             {
                 return;
             }
-            workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
+            user.Post -= Journal.PostMessage;
+            //  workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
         }
         /// <summary>
         /// Кнопка для закрытия аккаунта
@@ -114,13 +129,24 @@ namespace BankSystemPrototype
         private void CloseAccount_Click(object sender, RoutedEventArgs e)
         {
             var account = UserDataBase.users[UsersList.SelectedIndex].Accounts[AccountBox.SelectedIndex];
-            if (account.Cash != 0)
+            var user = UserDataBase.users[UsersList.SelectedIndex];
+            if (account.Cash != 0 )
             {
                 MessageBox.Show($"Для закрытия счета, на нем не должно быть денег!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            if (account.isClosed)
+            {
+                MessageBox.Show($"Счет уже закрыт", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             account.Close();
-            AccountBox.ItemsSource = UserDataBase.users[UsersList.SelectedIndex].Accounts.Select(x => x.GetInfo());
+
+            user.Post += Journal.PostMessage;
+            user.CloseAccountMessage();
+            
+
+            AccountBox.ItemsSource = user.Accounts.Select(x => x.GetInfo());
             workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
             ResetField();
         }
@@ -218,6 +244,22 @@ namespace BankSystemPrototype
             AddMoneyBox.Text = null;
         }
 
-      
+        private void CompleteTransaction(string where)
+        {
+            var time = DateTime.Now;
+            CashBox.Text = UserDataBase.users[UsersList.SelectedIndex].Accounts[AccountBox.SelectedIndex].Cash.ToString();
+            if (where == AddMoneyBox.Text)
+            {
+                MessageBox.Show($"Вы успешно пополнили счет на {where}\nВремя проведения операции {time}","Получилось!", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Деньги успешно переведены в кол-ве {where}\nВремя проведения операции {time}", $"Получилось!", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            
+            workWithJSON.DatabaseToJson(UserDataBase.users, "db.json");
+            
+        }
+
     }
 }
